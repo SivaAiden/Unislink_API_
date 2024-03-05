@@ -1,0 +1,31 @@
+table, th, td {
+  border:1px solid black;
+}
+
+nav{
+	width:90%;
+	position : sticky;
+	margin : 20px auto;
+	align-items: center;
+	z-index: 2;
+	display: flex;
+    text-align:right;
+}
+.nav-links  {
+    flex:1;
+    text-align:right;
+}
+
+.nav-links ul li {
+    display: inline-block;
+    margin-right: 30px;
+}
+
+.nav-links ul li:last-child {
+    margin-right: 1; /* Remove margin from the last item */
+}
+
+.nav-links ul li a {
+    text-decoration: none;
+    color: Black; /* Change link color as needed */
+}

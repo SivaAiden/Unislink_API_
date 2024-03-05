@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>
+			User Management
+		</title>
+		 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+		 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    
+		
+	</head>
+	<body>
+		<div class="main">
+			<nav>
+				<div class="nav-links">
+					<ul>
+						<li><a href="index.html">List Of Users</a></li>
+						<li><a href="Adduser.html">Add User</a></li>
+						<li><a href="ModifyUser.html">Modify User</a></li>
+						<li><a href="SearchUser.html">Search User</a></li>
+					</ul>
+				</div>
+			</nav>
+		</div>
+		
+		<h1>User Management</h1>
+		 <div class="container mt-5">
+       
+        <table class="table mt-3" border="">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Age</th>
+                    <th>Gender</th>
+                    <th>Hobbies</th>
+                    <th>Interests</th>
+                </tr>
+            </thead>
+            <tbody id="userListBody">
+                <!-- User list will be displayed here -->
+            </tbody>
+        </table>
+        <nav aria-label="Page navigation">
+            <ul  class="pagination d-flex flex-column" id="pagination">
+                <!-- Pagination links will be displayed here -->
+            </ul>
+        </nav>
+    </div>
+ 
+
+    
+<script>
+		
+			
+		
+			
+		
+		
+		// script.js
+
+document.addEventListener('DOMContentLoaded', function() {
+    fetchUsers(0); // Fetch users for the first page when the page loads
+});
+
+function fetchUsers(page) {
+    fetch(`/api/users?page=${page}&size=1`) // Assuming 10 users per page
+        .then(response => response.json())
+        .then(data => {
+            displayUsers(data.content,"userListBody");
+            displayPagination(data);
+        })
+        .catch(error => console.error('Error fetching users:', error));
+}
+
+function displayUsers(users,elementid) {
+    const userListBody = document.getElementById(elementid);
+    userListBody.innerHTML = ''; // Clear previous content
+    users.forEach(user => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${user.firstname} ${user.lastname}</td>
+            <td>${user.email}</td>
+            <td>${calculateAge(user.date)}</td>
+            <td>${user.gender}</td>
+            <td>${user.hobbies}</td>
+            <td>${user.interest.substring(0, 30)}</td>
+            <hr>
+        `;
+        userListBody.appendChild(row);
+    });
+}
+
+function displayPagination(data) {
+    const pagination = document.getElementById('pagination');
+    pagination.innerHTML = ''; // Clear previous content
+    const totalPages = data.totalPages;
+    const currentPage = data.number + 1; // Pages are zero-indexed
+    pagination.classList.remove('d-flex', 'flex-column'); // Remove the custom class
+    pagination.classList.add('pagination', 'justify-content-center'); // Add Bootstrap classes
+    for (let i = 1; i <= totalPages; i++) {
+        const li = document.createElement('li');
+        li.classList.add('page-item');
+        const link = document.createElement('a');
+        link.classList.add('page-link');
+        link.textContent = i;
+        link.onclick = () => fetchUsers(i - 1); // Pages are zero-indexed
+        if (i === currentPage) {
+            li.classList.add('active');
+        }
+        li.appendChild(link);
+        pagination.appendChild(li);
+    }
+}
+
+
+function calculateAge(dob) {
+    const currentDate = new Date();
+    const birthDate = new Date(dob);
+    let age = currentDate.getFullYear() - birthDate.getFullYear();
+    const monthDiff = currentDate.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && currentDate.getDate() < birthDate.getDate())) {
+        age--;
+    }
+    return age;
+}
+function listofuser(){
+	 window.location.href = 'Display.html';
+	 }
+	 
+	
+	 
+		</script>
+	</body>
+	
+</html>

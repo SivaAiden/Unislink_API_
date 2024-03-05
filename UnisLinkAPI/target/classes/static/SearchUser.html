@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>
+			Search User
+		</title>
+		 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+		 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+     <link rel="stylesheet" href="style.css">
+    
+	</head>
+    <body>
+		<div class="main">
+			<nav>
+				<div class="nav-links">
+					<ul>
+						<li><a href="index.html">List Of Users</a></li>
+						<li><a href="Adduser.html">Add User</a></li>
+						<li><a href="ModifyUser.html">Modify User</a></li>
+						<li><a href="SearchUser.html">Search User</a></li>
+					</ul>
+				</div>
+			</nav>
+		</div>
+<div>
+	
+<h2>Search Users by Name</h2>
+    <form id="NameForm">
+       
+       Name: <input type="text" id="searchfirst" required><br>
+        <button type="submit">Search</button>
+    </form>
+
+    <table class="table mt-3" border="" id="Nameuserid" style="display: none;">
+		 
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Age</th>
+                    <th>Gender</th>
+                    <th>Hobbies</th>
+                    <th>Interests</th>
+                </tr>
+            </thead>
+            <tbody id="Nameresult">
+                <!-- User list will be displayed here -->
+            </tbody>
+        </table> 
+    
+  </div>
+
+<div>
+	<h2>Search Users by Age</h2>
+    <form id="Ageform">
+        Min Age: <input type="date" name="minAge" required><br>
+        Max Age: <input type="date" name="maxAge" required><br>
+        <button type="submit" >Search</button>
+    </form>
+	<table class="table mt-3" border="" id="Ageuserid" style="display: none;">
+		 
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Age</th>
+                    <th>Gender</th>
+                    <th>Hobbies</th>
+                    <th>Interests</th>
+                </tr>
+            </thead>
+            <tbody id="Ageresult">
+                <!-- User list will be displayed here -->
+            </tbody>
+        </table> 
+</div>
+
+<div>
+<h2>Search Users by Hobbies</h2>
+    <form id="searchForm" >
+        <input type="checkbox" name="hobbies" value="Reading"> Reading<br>
+        <input type="checkbox" name="hobbies" value="Writing"> Writing<br>
+        <input type="checkbox" name="hobbies" value="Cooking"> Cooking<br>
+        <input type="checkbox" name="hobbies" value="Dancing"> Dancing<br>
+            <label><input type="checkbox" name="hobbies" value="Singing"> Singing</label><br>
+            <label><input type="checkbox" name="hobbies" value="Playing"> Playing</label><br>
+            <label><input type="checkbox" name="hobbies" value="Gardening"> Gardening</label><br>
+       
+        <button type="submit">Search</button>
+    </form>
+
+    <table class="table mt-3" border="" id="Searchuserid" style="display: none;">
+		 
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Age</th>
+                    <th>Gender</th>
+                    <th>Hobbies</th>
+                    <th>Interests</th>
+                </tr>
+            </thead>
+            <tbody id="Searchresult">
+                <!-- User list will be displayed here -->
+            </tbody>
+        </table> 
+    
+  </div> 
+    
+		<script>
+			document.getElementById('Ageform').addEventListener('submit', function(event) {
+    		event.preventDefault();
+    		searchUsers();
+			});
+	document.getElementById('searchForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    SearchByHobbies();
+});
+	
+	document.getElementById('NameForm').addEventListener('submit', function(event) {
+    event.preventDefault(); 
+    SearchByName();
+});
+
+function searchUsers() {
+            const form1 = document.getElementById('Ageform');
+            const formData = new FormData(form1);
+            const minAge = formData.get('minAge');
+            const maxAge = formData.get('maxAge');
+             var form = document.getElementById("Ageuserid");
+            // Perform AJAX request to search users by age
+            fetch('/searchByAge?minAge=' + minAge + '&maxAge=' + maxAge)
+                .then(response => response.json())
+                .then(data =>{
+					console.log(data);
+					displayUsers(data,"Ageresult");
+					
+					 if (form.style.display === "none") {
+      						  form.style.display = "block"
+    					} else {
+    		    		form.style.display = "none";
+   		 			}
+				} 
+                )
+                .catch(error => console.error('Error searching users by age:', error));
+        }
+        
+        function SearchByHobbies(){
+			const form1 = document.getElementById('searchForm');
+            const formData = new FormData(form1);
+            const selectedHobbies = Array.from(formData.getAll('hobbies')); // Get selected hobbies as array
+		
+			  if (selectedHobbies.length === 0) {
+        alert('Please select at least one hobby.');
+        return false; // Prevent form submission
+    }
+             var form = document.getElementById("Searchuserid");
+            // Perform AJAX request to search users by age
+            fetch('/searchByHobbies', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(selectedHobbies)
+            })
+                .then(response => response.json())
+                .then(data =>{
+					console.log(data);
+					displayUsers(data,"Searchresult");
+					
+					 if (form.style.display === "none") {
+      						  form.style.display = "block"
+    					} else {
+    		    		form.style.display = "none";
+   		 			}
+				} 
+                )
+                .catch(error => console.error('Error searching users by age:', error));
+		}
+		
+		 function SearchByName(){
+			const form1 = document.getElementById('NameForm');
+            const formData = new FormData(form1);
+            const searchfirst = document.getElementById("searchfirst").value;
+            
+             var form = document.getElementById("Nameuserid");
+            // Perform AJAX request to search users by age
+            fetch('/SearchByName?searchfirst=' + searchfirst)
+                .then(response => response.json())
+                .then(data =>{
+					console.log(data);
+					displayUsers(data,"Nameresult");
+					
+					 if (form.style.display === "none") {
+      						  form.style.display = "block"
+    					} else {
+    		    		form.style.display = "none";
+   		 			}
+				} 
+                )
+                .catch(error => console.error('Error searching users by age:', error));
+		}
+        
+			
+function displayUsers(users,elementid) {
+    const userListBody = document.getElementById(elementid);
+    userListBody.innerHTML = ''; // Clear previous content
+    users.forEach(user => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${user.firstname} ${user.lastname}</td>
+            <td>${user.email}</td>
+            <td>${calculateAge(user.date)}</td>
+            <td>${user.gender}</td>
+            <td>${user.hobbies}</td>
+            <td>${user.interest.substring(0, 30)}</td>
+            <hr>
+        `;
+        userListBody.appendChild(row);
+    });
+    
+function calculateAge(dob) {
+    const currentDate = new Date();
+    const birthDate = new Date(dob);
+    let age = currentDate.getFullYear() - birthDate.getFullYear();
+    const monthDiff = currentDate.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && currentDate.getDate() < birthDate.getDate())) {
+        age--;
+    }
+    return age;
+}
+}
+
+			
+		</script>
+	</body>
+	</html>

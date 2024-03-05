@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>
+			Add User
+		</title>
+		 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+		 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+     <link rel="stylesheet" href="style.css">
+	</head>
+    <body>
+		<div class="main">
+			<nav>
+				<div class="nav-links">
+					<ul>
+						<li><a href="index.html">List Of Users</a></li>
+						<li><a href="Adduser.html">Add User</a></li>
+						<li><a href="ModifyUser.html">Modify User</a></li>
+						<li><a href="SearchUser.html">Search User</a></li>
+					</ul>
+				</div>
+			</nav>
+		</div>
+		<h2>Add User</h2>
+    <form id="addUserForm">
+        First Name: <input type="text" id="firstname" required><br>
+        Last Name: <input type="text" id="lastname" required><br>
+        Email: <input type="text" id="email" required><br>
+        Date of Birth: <input type="date" id="date" required><br>
+        Gender:
+        <select id="gender" >
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Others">Others</option>
+        </select><br>
+        Hobbies:
+        <div id="hobbies" >
+            <label><input type="checkbox" name="hobby" value="Reading"> Reading</label><br>
+            <label><input type="checkbox" name="hobby" value="Writing"> Writing</label><br>
+            <label><input type="checkbox" name="hobby" value="Cooking"> Cooking</label><br>
+            <label><input type="checkbox" name="hobby" value="Dancing"> Dancing</label><br>
+            <label><input type="checkbox" name="hobby" value="Singing"> Singing</label><br>
+            <label><input type="checkbox" name="hobby" value="Playing"> Playing</label><br>
+            <label><input type="checkbox" name="hobby" value="Gardening"> Gardening</label><br>
+        </div><br>
+        Interest: <textarea id="interest" required></textarea><br>
+        <button type="submit" onclick="AddUser()">Add User</button>
+    </form>
+    
+		<script>
+			function AddUser(){
+				const UserDetails ={
+					firstname: document.getElementById('firstname').value,
+                lastname: document.getElementById('lastname').value,
+                email: document.getElementById('email').value,
+                date: document.getElementById('date').value,
+                gender: document.getElementById('gender').value,
+                hobbies: Array.from(document.querySelectorAll('#hobbies input[type="checkbox"]:checked')).map(checkbox => checkbox.value),
+                interest: document.getElementById('interest').value
+				};
+				
+			fetch('/adduser', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(UserDetails),
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log('Success:', response);
+                return response.text();
+            } else {
+                console.log('Error:', response);
+                alert('Failed to update User');
+            }
+            return response.json(); // Return response JSON for further processing
+        })
+        .then(data => {
+			console.log(data);
+			alert(data);
+			
+			
+		})
+        .catch((error) => console.log(error));
+     
+			}
+		</script>
+	</body>
+	</html>

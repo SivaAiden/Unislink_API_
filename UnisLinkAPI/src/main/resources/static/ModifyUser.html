@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>
+			Modify User
+		</title>
+		 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+		 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+     <link rel="stylesheet" href="style.css">
+    
+	</head>
+    <body>
+		<div class="main">
+			<nav>
+				<div class="nav-links">
+					<ul>
+						<li><a href="index.html">List Of Users</a></li>
+						<li><a href="Adduser.html">Add User</a></li>
+						<li><a href="ModifyUser.html">Modify User</a></li>
+						<li><a href="SearchUser.html">Search User</a></li>
+					</ul>
+				</div>
+			</nav>
+		</div>
+		<h1>Get Details</h1>
+    <select id="itemDropdown" >
+        <option>--Select--</option>
+    </select>
+    <button type="submit" onclick="ModifyUser()">Edit User</button>
+    <button type="submit" onclick="DeleteUser()">Delete User</button>
+
+
+    
+    
+    <div id="Modifyy" style="display: none;">
+    <h2>Add User</h2>
+    <form id="form">
+		<input type="hidden" id="hiddenValue" >
+        First Name: <input type="text" id="firstname1" required><br>
+        Last Name: <input type="text" id="lastname1" required><br>
+        Email: <input type="text" id="email1" required><br>
+        Date of Birth: <input type="date" id="date1" required><br>
+        Gender:
+        <select id="gender1" >
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Others">Others</option>
+        </select><br>
+        Hobbies:
+        <div id="hobbies1">
+            <label><input type="checkbox" name="hobby" value="Reading"> Reading</label><br>
+            <label><input type="checkbox" name="hobby" value="Writing"> Writing</label><br>
+            <label><input type="checkbox" name="hobby" value="Cooking"> Cooking</label><br>
+            <label><input type="checkbox" name="hobby" value="Dancing"> Dancing</label><br>
+            <label><input type="checkbox" name="hobby" value="Singing"> Singing</label><br>
+            <label><input type="checkbox" name="hobby" value="Playing"> Playing</label><br>
+            <label><input type="checkbox" name="hobby" value="Gardening"> Gardening</label><br>
+        </div><br>
+        Interest: <textarea id="interest1" required></textarea><br>
+        <button type="submit" onclick="ModifyData()">Modify User</button>
+    </form>
+</div>
+ 
+    
+		<script>
+		window.onload = function() {
+        fetchItems();
+    };
+		function ModifyData(){
+			const UserDetails ={
+				id:document.getElementById("hiddenValue").value,
+				firstname: document.getElementById('firstname1').value,
+                lastname: document.getElementById('lastname1').value,
+                email: document.getElementById('email1').value,
+                date: document.getElementById('date1').value,
+                gender: document.getElementById('gender1').value,
+                hobbies: Array.from(document.querySelectorAll('#hobbies1 input[type="checkbox"]:checked')).map(checkbox => checkbox.value),
+                interest: document.getElementById('interest1').value
+				};
+				const id = document.getElementById("hiddenValue").value;
+			fetch('/modifyuser/'+id, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(UserDetails),
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log('Success:', response);
+                return response.text();
+            } else {
+                console.log('Error:', response);
+                alert('Failed to update User');
+            }
+            return response.json(); // Return response JSON for further processing
+        })
+        .then(data => {
+			console.log(data);
+			alert(data);
+			
+			
+		})
+        .catch((error) => console.log(error));
+     
+		}
+			
+				 // Function to fetch items from backend and populate dropdown
+        function fetchItems() {
+            fetch('/get')
+            .then(response => response.json())
+            .then(data => {
+                const dropdown = document.getElementById('itemDropdown');
+                dropdown.innerHTML = '';
+                data.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value =  item.id+"-" +item.firstname +" "+ item.lastname;
+                    option.textContent = item.id+"-" +item.firstname +" "+ item.lastname;
+                    dropdown.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching items:', error));
+        }
+        
+
+		function DeleteUser(){
+			const Email = document.getElementById('itemDropdown').value;
+			const see = Email.split("-");
+            fetch('/deleteuser/'+see[0], {
+                method: 'DELETE'
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert(data);
+            })
+            .catch(error => console.error('Error:', error));
+		}
+		
+		function ModifyUser(){
+			const Email = document.getElementById('itemDropdown').value;
+			const see = Email.split("-");
+			const name = see[1].split(" ");
+    var form = document.getElementById("Modifyy");
+    if (form.style.display === "none") {
+        form.style.display = "block";
+        document.getElementById('hiddenValue').value = see[0];
+        document.getElementById('firstname1').value = name[0];
+        document.getElementById('lastname1').value = name[1];
+    } else {
+        form.style.display = "none";
+    }
+}
+		
+		</script>
+	</body>
+	</html>
